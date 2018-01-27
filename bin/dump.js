@@ -8,11 +8,16 @@
 
   module.exports = function(params, callback) {
     var dumper;
-    if (params.port == null) {
-      params.port = 6379;
-    }
-    if (params.host == null) {
-      params.host = '127.0.0.1';
+    if (params.socket != null) {
+       params.port = null;
+       params.host = null;
+    }else{
+      if (params.port == null) {
+       params.port = 6379;
+      }
+      if (params.host == null) {
+       params.host = '127.0.0.1';
+      }
     }
     if (params.db == null) {
       params.db = '0';
@@ -37,14 +42,18 @@
 
   RedisDumper = (function() {
     function RedisDumper(arg) {
-      var auth, host, port;
-      port = arg.port, host = arg.host, auth = arg.auth;
-      if (auth != null) {
-        this.db = redis.createClient(port, host, {
-          auth_pass: auth
-        });
-      } else {
-        this.db = redis.createClient(port, host);
+      if(arg.socket){
+          this.db = redis.createClient(socket);
+      }else{
+        var auth, host, port;
+        port = arg.port, host = arg.host, auth = arg.auth;
+        if (auth != null) {
+          this.db = redis.createClient(port, host, {
+            auth_pass: auth
+          });
+        } else {
+          this.db = redis.createClient(port, host);
+        }
       }
     }
 
